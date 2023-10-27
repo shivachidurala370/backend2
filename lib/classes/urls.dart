@@ -11,6 +11,7 @@ class URLS {
   static String resendOTP = "/api/v1/accounts/resend_otp/";
   static String tokenRefresh = "/api/v1/accounts/token_refresh/";
   static String products = "/api/v1/list_products/";
+  static String addproducts = "/api/v1/add_products/";
 
   static String parseImage(String? url) {
     if (url == null) return "";

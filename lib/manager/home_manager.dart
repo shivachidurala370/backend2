@@ -55,6 +55,38 @@ class HomeManager {
           "Something Server Problem", ResponseStatus.FAILED);
     }
   }
+
+  Future<ResponseData> addproductsData() async {
+    Response response;
+    try {
+      response = await dioClient.ref!.post<dynamic>(URLS.addproducts);
+      print("services data ----> ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("services data is ----> ${response.data}");
+
+        //final services = productsListModelFromJson(jsonEncode(response.data));
+
+        //final products = ProductsListModel.fromJson(response.data);
+        // final products = productsListModelFromJson(response.data);
+
+        print("services data are ----> ${response.data}");
+
+        return ResponseData("success", ResponseStatus.SUCCESS);
+      } else {
+        var message = "Unknown error";
+        if (response.data?.containsKey("message") == true) {
+          message = response.data['message'];
+        }
+        return ResponseData(message, ResponseStatus.FAILED);
+      }
+    } on Exception catch (err) {
+      print(err);
+      var msg = ParseError.parse(err);
+      return ResponseData<dynamic>(
+          "Something Server Problem", ResponseStatus.FAILED);
+    }
+  }
 }
 
 HomeManager homeManager = HomeManager();
