@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../classes/storagekeys.dart';
 import '../classes/urls.dart';
 import '../models/products_model.dart';
 import '../network calls/base_network.dart';
@@ -33,7 +35,7 @@ class HomeManager {
       if (response.statusCode == 200) {
         print("services data is ----> ${response.data}");
 
-        final services = productsListModelFromJson(jsonEncode(response.data));
+        final services = productsmodelFromJson(jsonEncode(response.data));
 
         //final products = ProductsListModel.fromJson(response.data);
         // final products = productsListModelFromJson(response.data);
@@ -56,7 +58,7 @@ class HomeManager {
     }
   }
 
-  Future<ResponseData> addproductsData() async {
+  Future<ResponseData> addproductsData(FormData formdata) async {
     Response response;
     try {
       response = await dioClient.ref!.post<dynamic>(URLS.addproducts);
@@ -65,14 +67,14 @@ class HomeManager {
       if (response.statusCode == 200) {
         print("services data is ----> ${response.data}");
 
-        //final services = productsListModelFromJson(jsonEncode(response.data));
+        //final services = productsmodelFromJson(jsonEncode(response.data));
 
         //final products = ProductsListModel.fromJson(response.data);
         // final products = productsListModelFromJson(response.data);
 
         print("services data are ----> ${response.data}");
 
-        return ResponseData("success", ResponseStatus.SUCCESS);
+        return ResponseData("success", ResponseStatus.SUCCESS, data: formdata);
       } else {
         var message = "Unknown error";
         if (response.data?.containsKey("message") == true) {

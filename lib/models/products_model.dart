@@ -1,24 +1,22 @@
 // To parse this JSON data, do
 //
-//     final productsListModel = productsListModelFromJson(jsonString);
+//     final productsmodel = productsmodelFromJson(jsonString);
 
 import 'dart:convert';
 
-ProductsListModel productsListModelFromJson(String str) =>
-    ProductsListModel.fromJson(json.decode(str));
+Productsmodel productsmodelFromJson(String str) =>
+    Productsmodel.fromJson(json.decode(str));
 
-String productsListModelToJson(ProductsListModel data) =>
-    json.encode(data.toJson());
+String productsmodelToJson(Productsmodel data) => json.encode(data.toJson());
 
-class ProductsListModel {
+class Productsmodel {
   List<Datum>? data;
 
-  ProductsListModel({
+  Productsmodel({
     this.data,
   });
 
-  factory ProductsListModel.fromJson(Map<String, dynamic> json) =>
-      ProductsListModel(
+  factory Productsmodel.fromJson(Map<String, dynamic> json) => Productsmodel(
         data: json["data"] == null
             ? []
             : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),

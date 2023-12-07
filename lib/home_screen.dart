@@ -1,7 +1,9 @@
 //import 'dart:html';
 import 'dart:io';
 
+import 'package:backend2/add_products.dart';
 import 'package:backend2/models/products_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,7 +20,7 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  ProductsListModel? products;
+  Productsmodel? products;
   bool _fetching = false;
 
   Future<void> productsData() async {
@@ -37,7 +39,7 @@ class _HomescreenState extends State<Homescreen> {
       if (response.status == ResponseStatus.SUCCESS) {
         //Fluttertoast.showToast(msg: response.message);
 
-        print((response.data as ProductsListModel).toJson());
+        print((response.data as Productsmodel).toJson());
 
         setState(() {
           products = response.data;
@@ -53,42 +55,10 @@ class _HomescreenState extends State<Homescreen> {
     }
   }
 
-  // @override
+  @override
   void initState() {
     // TODO: implement initState
     productsData();
-  }
-
-  Future<void> addproductsData() async {
-    setState(() {
-      _fetching = true;
-    });
-    try {
-      final response = await homeManager.addproductsData();
-      // setState(() {
-      //   _fetching = false;
-      // });
-
-      print("==================================)");
-
-      // if (response.status == ResponseStatus.SUCCESS) {
-      if (response.status == ResponseStatus.SUCCESS) {
-        //Fluttertoast.showToast(msg: response.message);
-
-        //print((response.data as ProductsListModel).toJson());
-
-        setState(() {
-          products = response.data;
-        });
-      } else {
-        Fluttertoast.showToast(msg: response.message);
-      }
-    } catch (err) {
-      print(err);
-      setState(() {
-        _fetching = false;
-      });
-    }
   }
 
   File? image;
@@ -102,92 +72,195 @@ class _HomescreenState extends State<Homescreen> {
     } catch (e) {
       print(e);
     }
+  }
 
-    final TextEditingController _productnamecontroller =
-        TextEditingController();
-    final TextEditingController _descriptioncontroller =
-        TextEditingController();
-
-    void addProducts() async {
-      String productName = _productnamecontroller.text.trim();
-      String description = _descriptioncontroller.text.trim();
-
-      final formdata = FormData.fromMap({
-        "product_name": productName,
-        "description": description,
-        "image": await MultipartFile.fromFile(image!.path),
-      });
-
-      @override
-      Widget build(BuildContext context) {
-        return SafeArea(
-          child: Scaffold(
-            body: Center(
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _productnamecontroller,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Enter the product name",
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    controller: _descriptioncontroller,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Enter the product name",
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      pickImage(ImageSource.gallery);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 60,
-                      width: 140,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        "Select a image",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  image != null
-                      ? SizedBox(
-                          height: 120,
-                          width: 120,
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: Image.file(
-                                image!,
-                                fit: BoxFit.cover,
-                              )),
-                        )
-                      : SizedBox(
-                          height: 20,
-                        ),
-                  TextButton(
-                      onPressed: () {
-                        addProducts();
-                      },
-                      child: Text("Add Product")),
-                ],
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(
+              left: 16,
+              top: 16,
+              right: 16,
             ),
-          ),
-        );
-      }
-    }
+            child: Column(
+              children: [
+                Text(
+                  "List Products",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF000000)),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                products == null
+                    ? CircularProgressIndicator()
+                    : Container(
+                        padding: EdgeInsets.all(10),
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        child: GridView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: products!.data!.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 1,
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 20,
+                              mainAxisExtent: 280,
+                            ),
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                padding: EdgeInsets.all(10),
+                                height: 100,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        blurRadius: 6,
+                                        color: Colors.grey.shade400)
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: CachedNetworkImageProvider(
+                                                "http://jayanthi10.pythonanywhere.com/${products!.data![index].image}"),
+                                            fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "${products!.data![index].productName}",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF000000)),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "${products!.data![index].description}",
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300,
+                                          color: Color(0xFF676b6e)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Addproducts()));
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    height: 40,
+                    //width: 160,
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Add Products",
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFFffffff),
+                          size: 16,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  height: 40,
+                  //width: 160,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Update Products",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFFffffff),
+                        size: 16,
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  height: 40,
+                  //width: 160,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Delete Products",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFFffffff),
+                        size: 16,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }
