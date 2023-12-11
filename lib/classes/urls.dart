@@ -12,6 +12,8 @@ class URLS {
   static String tokenRefresh = "/api/v1/accounts/token_refresh/";
   static String products = "/api/v1/products/";
   static String addproducts = "/api/v1/products/";
+  static String updateproducts = "/api/v1/products/";
+  static String deleteproducts = "/api/v1/products/";
 
   static String parseImage(String? url) {
     if (url == null) return "";

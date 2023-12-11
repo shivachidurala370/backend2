@@ -89,7 +89,18 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text(
+                "LOGIN",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000000)),
+              ),
+              SizedBox(
+                height: 32,
+              ),
               TextField(
                 controller: _usernamecontroller,
                 decoration: InputDecoration(
@@ -105,13 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     border: OutlineInputBorder(), labelText: "Enter Password"),
               ),
               SizedBox(
-                height: 20,
+                height: 28,
               ),
-              TextButton(
-                  onPressed: () {
-                    _performLogin();
-                  },
-                  child: Text("Login")),
+              InkWell(
+                onTap: () {
+                  _performLogin();
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  width: 140,
+                  decoration: BoxDecoration(
+                      color: Color(0xFF000000),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFffffff)),
+                  ),
+                ),
+              )
             ],
           ),
         ),

@@ -61,7 +61,8 @@ class HomeManager {
   Future<ResponseData> addproductsData(FormData formdata) async {
     Response response;
     try {
-      response = await dioClient.ref!.post<dynamic>(URLS.addproducts);
+      response =
+          await dioClient.ref!.post<dynamic>(URLS.addproducts, data: formdata);
       print("services data ----> ${response.data}");
 
       if (response.statusCode == 200) {
@@ -74,7 +75,10 @@ class HomeManager {
 
         print("services data are ----> ${response.data}");
 
-        return ResponseData("success", ResponseStatus.SUCCESS, data: formdata);
+        return ResponseData(
+          "success",
+          ResponseStatus.SUCCESS,
+        );
       } else {
         var message = "Unknown error";
         if (response.data?.containsKey("message") == true) {
@@ -87,6 +91,80 @@ class HomeManager {
       var msg = ParseError.parse(err);
       return ResponseData<dynamic>(
           "Something Server Problem", ResponseStatus.FAILED);
+    }
+  }
+
+  Future<ResponseData> updateproductsdata(FormData formdata) async {
+    Response response;
+    try {
+      response = await dioClient.ref!
+          .patch<dynamic>(URLS.updateproducts, data: formdata);
+      print("services data ----> ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("services data is ----> ${response.data}");
+
+        //final services = productsmodelFromJson(jsonEncode(response.data));
+
+        //final products = ProductsListModel.fromJson(response.data);
+        // final products = productsListModelFromJson(response.data);
+
+        print("services data are ----> ${response.data}");
+
+        return ResponseData(
+          "success",
+          ResponseStatus.SUCCESS,
+        );
+      } else {
+        var message = "Unknown error";
+        if (response.data?.containsKey("message") == true) {
+          message = response.data['message'];
+        }
+        return ResponseData(message, ResponseStatus.FAILED);
+      }
+    } on Exception catch (err) {
+      print(err);
+      var msg = ParseError.parse(err);
+      return ResponseData<dynamic>(
+          "Something Server Problem", ResponseStatus.FAILED,
+          data: msg);
+    }
+  }
+
+  Future<ResponseData> deleteproductsdata(FormData formdata) async {
+    Response response;
+    try {
+      response = await dioClient.ref!
+          .delete<dynamic>(URLS.deleteproducts, data: formdata);
+      print("services data ----> ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("services data is ----> ${response.data}");
+
+        //final services = productsmodelFromJson(jsonEncode(response.data));
+
+        //final products = ProductsListModel.fromJson(response.data);
+        // final products = productsListModelFromJson(response.data);
+
+        print("services data are ----> ${response.data}");
+
+        return ResponseData(
+          "success",
+          ResponseStatus.SUCCESS,
+        );
+      } else {
+        var message = "Unknown error";
+        if (response.data?.containsKey("message") == true) {
+          message = response.data['message'];
+        }
+        return ResponseData(message, ResponseStatus.FAILED);
+      }
+    } on Exception catch (err) {
+      print(err);
+      var msg = ParseError.parse(err);
+      return ResponseData<dynamic>(
+          "Something Server Problem", ResponseStatus.FAILED,
+          data: msg);
     }
   }
 }

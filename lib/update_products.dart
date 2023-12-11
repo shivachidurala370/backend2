@@ -1,38 +1,39 @@
 //import 'dart:html';
-//import 'dart:html';
 import 'dart:io';
 
-import 'package:backend2/classes/urls.dart';
 import 'package:backend2/home_screen.dart';
 import 'package:backend2/manager/home_manager.dart';
-import 'package:backend2/network%20calls/base_network.dart';
-import 'package:backend2/network%20calls/base_response.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class Addproducts extends StatefulWidget {
-  const Addproducts({super.key});
+import 'network calls/base_response.dart';
+
+class Updateproducts extends StatefulWidget {
+  const Updateproducts({super.key});
 
   @override
-  State<Addproducts> createState() => _AddproductsState();
+  State<Updateproducts> createState() => _UpdateproductsState();
 }
 
-class _AddproductsState extends State<Addproducts> {
+class _UpdateproductsState extends State<Updateproducts> {
+  final TextEditingController _productidcontroller = TextEditingController();
   final TextEditingController _productnamecontroller = TextEditingController();
   final TextEditingController _descriptioncontroller = TextEditingController();
 
-  void addproducts() async {
+  void updateproducts() async {
+    String id = _productidcontroller.text.trim();
     String productName = _productnamecontroller.text.trim();
     String description = _descriptioncontroller.text.trim();
 
     final formdata = FormData.fromMap({
+      "product_id": id,
       "product_name": productName,
       "description": description,
       "image": await MultipartFile.fromFile(image!.path),
     });
     try {
-      final response = await homeManager.addproductsData(formdata);
+      final response = await homeManager.updateproductsdata(formdata);
       print(response.data);
       if (response.status == ResponseStatus.SUCCESS) {
         print("==========Response after Success${response.data}");
@@ -42,8 +43,7 @@ class _AddproductsState extends State<Addproducts> {
         });
       }
     } catch (e) {
-      print("===============================================>Error");
-      print(e);
+      print("======================> Error");
     }
   }
 
@@ -61,39 +61,47 @@ class _AddproductsState extends State<Addproducts> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: Text(
-            "Add Products",
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFffffff)),
-          ),
-          centerTitle: true,
-          leading: InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Homescreen()));
-            },
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 20,
-            ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF000000),
+        title: Text(
+          "Update Products",
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFffffff)),
+        ),
+        centerTitle: true,
+        leading: InkWell(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Homescreen()));
+          },
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.white,
+            size: 20,
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
             children: [
               TextField(
+                controller: _productidcontroller,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(), labelText: "Product id"),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
                 controller: _productnamecontroller,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Enter Product name"),
+                    border: OutlineInputBorder(), labelText: "Product name"),
               ),
               SizedBox(
                 height: 20,
@@ -101,7 +109,7 @@ class _AddproductsState extends State<Addproducts> {
               TextField(
                 controller: _descriptioncontroller,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(), labelText: "Description"),
+                    border: OutlineInputBorder(), labelText: "description"),
               ),
               SizedBox(
                 height: 20,
@@ -133,27 +141,14 @@ class _AddproductsState extends State<Addproducts> {
                             fit: BoxFit.cover,
                           )),
                     )
-                  :
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     shape: BoxShape.circle,
-                  //     color: Colors.red,
-                  //     image: DecorationImage(
-                  //       image: NetworkImage(''),
-                  //       fit: BoxFit.cover, // optional
-                  //     ),
-                  //   ),
-                  //   height: 120,
-                  //   width: 150,
-                  // ),
-                  SizedBox(
+                  : SizedBox(
                       height: 20,
                     ),
               TextButton(
                   onPressed: () {
-                    addproducts();
+                    updateproducts();
                   },
-                  child: Text("Add Product")),
+                  child: Text("Update Product"))
             ],
           ),
         ),
